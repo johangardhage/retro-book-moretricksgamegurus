@@ -10,6 +10,12 @@ rule cc
 #  command = $cc $in $windows -o $out.
   description = Building executable $out
 
-build $builddir/demo: cc $srcdir/demo.cpp
+build $builddir/scale: cc $srcdir/scale.cpp
+build $builddir/rotate: cc $srcdir/rotate.cpp
+build $builddir/height1: cc $srcdir/height1.cpp
+build $builddir/height2: cc $srcdir/height2.cpp
 
-build demo: phony $builddir/demo
+build scale: phony $builddir/scale
+build rotate: phony $builddir/rotate
+build height1: phony $builddir/height1
+build height2: phony $builddir/height2
