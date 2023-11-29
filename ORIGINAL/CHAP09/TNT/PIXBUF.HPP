@@ -1,0 +1,66 @@
+// Header:   pixbuf.hpp    
+// rev.  :   1.00              10.08.94
+//
+// Compilers: Microsoft Visual C++ 1.5, 2.0, Watcom 10.0, GCC (Sun)
+// Environments:  machine independent
+// Author:    Michael Norton
+// Functionality: 
+//     header for class pixelBuffer
+//     function and data members are defined within.
+//     class intended as machine independent pixel
+//     buffer manipulator.
+//
+//         pixelDyne  copyright 1993, 1994, 1995
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef _PIXBUF_HPP
+#define _PIXBUF_HPP
+
+// I N C L U D E S ///////////////////////////////////////////////////////////
+
+#include "gks.hpp"
+
+
+// CLASS BODY DEFINITION /////////////////////////////////////////////////////
+
+class pixelBuffer{
+    friend class Rect;
+  private:
+    unsigned int bufSize;          // BYTE size of buffer
+    unsigned int bufRowBytes;      // # BYTE's of pixels in each row
+    unsigned int width, height;    // logical width and height
+    Rect bounds;                  // logical rectangular boundaries
+
+  public:
+    unsigned char *pixBuf;          // buffer for pixels
+    // default constructor
+    pixelBuffer();
+    // constructor based on buffer size
+    pixelBuffer( unsigned int n );
+    // constructor based on rect
+    pixelBuffer( const Rect& r);
+    // copy constructor
+    pixelBuffer( const pixelBuffer& );
+    
+    // over loaded assignment operator
+    pixelBuffer& operator=(const pixelBuffer&);
+
+    // copy pixel BYTEs
+    void copyPixels( const pixelBuffer&,const Rect&, const Rect& );
+    void copyTransPixels( const pixelBuffer&,const Rect&, const Rect& );
+    void copyMaskPixels( const pixelBuffer&, const pixelBuffer&, 
+                            const Rect&, const Rect&, const Rect& );
+    
+
+    // dump buffer contents to the screen
+    void writeVideo();
+    void pharWriteVideo();
+
+    // default destructor
+    ~pixelBuffer(){};
+};
+#endif
+
+//////////////////////////////////////////////////////////////////////////////
+
+

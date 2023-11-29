@@ -1,0 +1,10 @@
+NAME height
+DEBUG ALL
+FILE height.obj
+FILE castray.obj
+LIB \helix32\helix32.lib
+OPTION
+  VERBOSE,
+  STACK=12000,
+  OFFSET=64K,
+  DOSSEG

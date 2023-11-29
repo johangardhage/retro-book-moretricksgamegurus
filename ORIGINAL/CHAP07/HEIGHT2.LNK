@@ -1,0 +1,10 @@
+NAME height2
+DEBUG ALL
+FILE height2.obj
+FILE height2a.obj
+LIB utils
+OPTION
+  VERBOSE,
+  STACK=12000,
+  OFFSET=64K,
+  DOSSEG

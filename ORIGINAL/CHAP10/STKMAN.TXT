@@ -1,0 +1,2228 @@
+DiamondWare's Sound ToolKit
+
+
+
+DiamondWare's Sound ToolKit (STK) was designed and developed 
+by DiamondWare, Ltd. and is marketed and distributed exclusively by 
+MVP Software, Inc.
+
+This software and documentation are Copyright 1994 DiamondWare, 
+Ltd.  All rights reserved.  DiamondWare's Sound ToolKit, 
+DiamondWare's STK, The STK, DiamondWare, and DW are trademarks 
+of DiamondWare, Ltd.
+
+DiamondWare can be contacted via:
+FAX/BBS: (914) 638-6942
+email:	 keith@dw.com
+
+MVP can be contacted via:
+FAX:		 (616) 245-3204
+email:	 74777.1116@compuserve.com
+
+
+
+DiamondWare's Sound ToolKit was designed and developed by Keith 
+Weiner and Eric Lorenzen.
+
+Example source code was developed by Erik Lorenzen and Keith Weiner, 
+with language-specific help from David Johndrow (Pascal), and Don 
+Lemons (BASIC).
+
+This document was written by Keith Weiner, with major revisions by 
+Erik Lund, and a chapter on music/sound development by David Schultz.  You 
+can contact David via CompuServe: 72143,3624.
+
+Included sample MIDI song is Copyright 1994 David Schultz, All Rights
+Reserved.  Used by permission.	May not be used without written permission
+from David Schultz.
+
+Proofreading was done by Joyce Peterson, David Ziegler, and Erik Lorenzen.
+
+Miscellaneous utility programs which made the STK possible were written 
+by David Ziegler.
+
+The included FM instrument patch file is courtesy of Rob Wallace
+of Wallace Music and Sound.  You can contact Rob via CompuServe:
+71042,1410.
+
+Special thanks to Steve Blackwood, John Davis, Steve Estvanik, David 
+Johndrow, Don Lemons, and David Schultz for testing.
+
+
+
+386MAX is a trademark of Qualitas Inc.
+Advanced Gravis and Ultrasound are trademarks of Advanced Gravis Computer 
+Technology Ltd.
+AMD is a trademark of Advanced Micro Devices Corporation
+Aria is a trademark of Prometheus Products Inc.
+Bane is a trademark of Superego Software
+Borland and Turbo Pascal are trademarks of Borland International Inc.
+Cyrix is a trademark of Cyrix Corporation
+IBM and OS/2 are trademarks of International Business Machines Corporation
+Intel is a trademark of Intel Corporation
+Microsoft, MS-DOS, and Windows are trademarks of Microsoft Corporation
+Novell DOS and Novell are trademarks of Novell Inc.
+OPL-2 and OPL-3 are trademarks of Yamaha Corporation
+QEMM is a trademark of Quarterdeck Office Systems Inc.
+Sound Blaster is a trademark of Creative Labs Inc.
+TI is a trademark of Texas Instruments Inc.
+
+
+
+License Agreement
+
+This document is a legal agreement between you and DiamondWare, Ltd.  
+By opening the sealed software packet, you agree to be bound by the terms of 
+this License Agreement and Disclaimer of Warranty and Limited Warranty.  
+If you do not agree to the terms of this agreement, promptly return the 
+unopened software packets and the accompanying items (including written 
+materials and binders or other containers) to MVP Software, Inc., for a full 
+refund.
+
+1.  GRANT OF LICENSE.  This License Agreement permits you (one person) to use 
+one copy of the enclosed Sound ToolKit and documentation (the STK) on a 
+single computer.
+
+2.  COPYRIGHT.  The STK is owned by DiamondWare, Ltd. and is protected by 
+United States copyright laws and international treaty provisions.  Therefore, 
+you must treat the STK like any other copyrighted work except that you may 
+either (a) make one copy of the STK solely for backup or archival purposes, 
+or (b) transfer the STK to your hard disk, provided you keep the original 
+solely for backup or archival purposes.  You may not copy the written
+materials accompanying the STK.  You may be held legally responsible 
+for any copyright infringement that is caused or encouraged by your 
+failure to abide the terms of this License Agreement.
+
+3.  OTHER RESTRICTIONS.  You may not rent or lease the STK. The STK is 
+licensed to you, the Licensee, and may not be transferred to any other party 
+without the prior written consent of DiamondWare, Ltd.  You may not reverse 
+engineer, decompile, or disassemble the STK.
+
+4.  DISTRIBUTION.  You have a royalty-free non-exclusive right to reproduce 
+and distribute executable files created using the STK, and also the program 
+FINDSB.EXE.
+
+Disclaimer of Warranty and Limited Warranty
+
+The STK and accompanying written materials are sold "as is", without warranty 
+or guarantee as to their performance, merchantability, or fitness for any 
+particular purpose.  The entire risk as to the results and performance of the 
+STK is assumed by you.
+
+However, the magnetic diskette on which the program is recorded is warranted 
+to be free from defects in materials and workmanship under normal use for a 
+period of ninety days from the date of purchase.  If, during this ninety-day 
+period, the diskette should become defective, it may be returned for a 
+replacement without charge, provided you have previously sent in our 
+registration card.
+
+Your sole and exclusive remedy in the event of a defect is expressly limited
+to replacement of the diskette as provided above.
+
+Any implied warranties relating to the diskette, including any implied 
+warranties of merchantability and fitness for a particular purpose, are 
+limited to a period of ninety days from date of purchase.  Neither the 
+publisher nor the developer of the STK shall be liable for indirect, special, 
+or consequential damages resulting from the use of this product.
+
+
+
+All About the STK 
+
+		What Is It?  What Does It Do?
+
+DiamondWare's Sound ToolKit (STK) is a sound library written 
+in 99% real-mode assembler (except for API "wrapper" functions).  It 
+supports FM music synthesis and digital audio on Sound Blaster and 
+compatible hardware.
+
+The STK can play up to sixteen digital effects at the same time (called 
+polyphony).  Unlike other sound libraries, there are no 
+restrictions on calling INT 21h (DOS) functions.
+
+It's linkable with any C/C++, Pascal, or BASIC program, which 
+means adding the STK to a mostly-completed program will be easy.
+
+The STK is built tough.  DiamondWare has acquired over thirty sound 
+boards, fifty books (including manufacturer's specifications), 
+four operating systems, and five brands of CPUs to test the STK during 
+development. All this testing means that programmers who use the STK 
+won't field millions of tech-support calls saying "the sound 
+doesn't work," or "it doesn't crash unless I enable 
+the sound option."
+
+The STK's autodetect is powerful.  It can determine the hardware 
+type, port, DMA channel, and IRQ level automatically--under every 
+major DOS environment (including Windows DOS boxes, OS/2 DOS boxes, 
+Novell DOS, QEMM, 386MAX, and EMM386), running on every major brand 
+of CPU, including Intel, AMD, Cyrix, IBM, and Texas Instruments.  The 
+STK goes directly to the sound hardware, requiring neither environment 
+variables nor user input.  And, should you wish, you can override 
+any setting.
+
+The STK provides "mixer" functionality.  The better boards 
+(Sound Blaster Pro and up) have chips on-board which can control the 
+volume level of music and sound effects independently, and also the 
+total volume.  For sound boards which don't have such a chip, 
+the STK can mix levels in software.
+
+DiamondWare's STK supports an important subset of the MIDI specification, 
+including true dynamic patch changes, velocity sensitivity, pitch 
+bend, and aftertouch.  Future versions of the STK will support more 
+of the MIDI specification.
+
+The STK doesn't allocate any memory dynamically.  It doesn't 
+make any INT 21h calls (except during autodetect and initialization).  It 
+doesn't require any outside code in order to link.  It doesn't 
+have to reprogram the timer hardware, though it comes with optional 
+code to do this.  The STK doesn't take hundreds of kilobytes 
+of RAM.  It doesn't pollute your users' install directories 
+with scores of files.  And it doesn't use a single line of 
+code from a sound board manufacturer, or any other library vendor.
+
+		What Are Its Limitations?
+
+The STK is a kit for Sound Blasters, SB-compatibles, and SB-clones.  It 
+will not work with the native modes of non-Creative Labs' sound 
+boards. [Creative Labs is the major player in the sound board market.]
+However, it has been designed and tested to work with their compatible 
+modes, (which are often only 90-95% "compatible").
+
+It requires a 386SX or higher processor .  This is not because it 
+uses so much computing power (it doesn't), but because we've 
+made extensive use of instructions and registers which are unavailable 
+on the 286 and lower.  
+
+The STK can't play VOC files (sound effects) greater than 64k, 
+although it supports easy sequencing of split-up VOC files.
+
+The STK needs interrupts to remain active.  Disabling interrupts 
+for extended periods of time will pause all sound playback, until 
+interrupts are enabled again.  Music notes will hang, and digitized 
+will skip and repeat like a CD player trying to track a bad disc.
+
+The STK does not support sampling rates under 4 KHz or over 24 KHz.
+
+The STK does not manage resource files, nor play files from disk.  You 
+must manage your directory structure, and load each file into a buffer 
+before the STK can play it.
+
+The STK can't change its settings (like volume levels) "in 
+the background".  If you want to do this, then write some code 
+which checks the current time, and slowly change the volume level.  It's 
+no harder than moving 20 space aliens plus 1 player and 5 bullets.
+
+
+
+Before You Start
+
+		Prerequisite Knowledge
+
+DiamondWare's STK is a programmer's library, not a game.	As such, it's a
+highly technical product.  While this document was written to tell you all
+about the STK, it can't tell you how to program.  Before reading this
+document, you should be familiar with PC programming--including bitwise
+operations and linking with external libraries.
+
+	Prior
+PC programming experience in a language linkable with the STK--including 
+knowledge of bit-level operations--is presumed.
+
+The STK was designed to work with C/C++, Pascal, and BASIC.   Even 
+if you will not be programming in C, several conventions and examples 
+in this manual are given only in C, so prior C experience will be 
+helpful.  For example, all function prototypes are given for C, Pascal, and 
+BASIC; but in general, descriptions are given only using C terminology.  Here 
+is a guide for Pascal and BASIC users to aid in understanding C:
+
+	All subroutines are called "functions", although in Pascal and BASIC they 
+	may be "functions", "procedures", or "subroutines".  A C struct, often 
+	called a structure, is the equivalent of a Pascal record and a BASIC TYPE.
+
+	C expresses bitwise OR as a pipe |, bitwise AND as an ampersand &, logical
+	OR as two pipes ||, and logical AND as two ampersands &&.  C comments are
+	either a double slash //Comment which is a comment until the end of the 
+	line (equivalent to BASIC's apostrophe or REM) or  /*Comment*/ (equivalent 
+	to Pascal's (*Comment*)).  BASIC programmers should ignore all 
+	underscores _.
+
+There's one other important thing for Pascal and BASIC programmers to know 
+about C.  The ampersand & operator can also be used to take the address of 
+a variable.  For example:
+
+dws_MSongStatus(&mstat);
+
+This call passes the address of the variable mstat to the function (which 
+puts the song's status into the variable).  This is equivalent to Pascal's 
+var or BASIC's SEG (pass by reference) calling conventions.
+
+In specific instances, Pascal and BASIC differences with C will be explicitly 
+listed.
+
+Sometimes in this document, Turbo Pascal is distinguished from other 
+languages.  This is because Pascal works with "units."  A unit contains not 
+only the linkable program code, but also the declarations which tell the 
+compiler about that program code and the data types it requires.  C and BASIC 
+use a different model, in which the compiler is told to include some 
+human-readable header file, which contains declarations of code and data 
+types, but no more.  The compiler produces a .OBJ file, which the linker puts 
+together with other .OBJ files (and .LIB files, which are really just several 
+.OBJ files in one) to make the final .EXE.
+
+The Sound ToolKit is distributed with a single .LIB which works with all 
+Microsoft languages, Borland C/C++, and Turbo Assembler.  Header files are 
+provided for C/C++ and BASIC.  Also included are unit files for Turbo Pascal 
+versions 6 and 7.
+
+All human-readable source files provided on disk were produced with tab stops 
+set to 2.
+
+		Installing the STK
+
+The STK is distributed on a single disk, containing several self-explanatory 
+directories.  Simply copy the entire directory tree to your hard drive.  
+For example:
+C:\SOURCE\BANE\STK xcopy a:\*.* /s
+
+That's it; it's installed.
+
+Make sure you put the header files and the library file (or the Pascal unit 
+file) where the compiler and linker can find them.  If you need more 
+information on this and related topics, your compiler's manual will be far 
+more detailed than is possible here, and will cover your specific software 
+environment.
+
+You may want to put the executables (MID2DWM.EXE, VOC2DWD.EXE, etc.) in an 
+existing binaries directory, or set the PATH environment variable to point to 
+them.  Your MS-DOS manual describes this in detail.
+
+		Linking With the STK
+
+The STK has been designed so that calling it in a real-world program is 
+relatively simple.  However, the STK is a non-trivial component of your 
+program, and there are some non-obvious things to know.
+
+As mentioned above, the STK works with C/C++, Pascal, and BASIC.  Additionally, 
+it should work with any other linkable language which supports the 
+Intel/Microsoft .OBJ file format specification (such as assembler).  If you 
+are using  such a language, you will have to port the C header files to your 
+language.  Link with DWS.LIB as you would with any other library.
+
+By far, the easiest way to use the STK is in large model programs.  In a large 
+model program, all function calls and all data references are made via 32-bit 
+segment:offset addresses.  The STK expects this convention.
+
+It's possible to use the STK in mixed model programs, where some code or data 
+is "near" and other code or data is "far."  As long as the STK's code and data 
+is all "far," this can work.  See your compiler manual for details on how to 
+do this.  
+
+
+
+About Music and Sound
+
+		Introduction
+
+Sound, especially in the PC world, is a complicated topic.  This section will 
+serve as an overview of the subject.  The STK provides functionality for the 
+two primary aspects of sound programming:  FM synthesis for playback of MIDI 
+(.MID format) music, and digital audio for playback of digitally sampled 
+(.VOC format) sound effects.  
+
+		FM Synthesis
+
+FM stands for Frequency Modulation, which refers to how musical notes are 
+created.  In FM, a sound is created from two operators, which are simple sine 
+waves.  One operator, called the modulator, is used to modify the frequency 
+output by the other, called the carrier.  The resulting waveform is 
+surprisingly rich (much more so than Amplitude Modulation).  FM synthesis is 
+a convenient method for playing music.
+
+The waveform is put through an envelope, which alters the output volume during 
+the four distinct phases of a musical note: attack, sustain, release, and 
+decay.
+
+On Sound Blasters, FM synthesis is performed by a Yamaha OPL-2 or OPL-3 chip 
+in the digital domain.  The total output of all voices is sent to a special 
+Yamaha Digital-to-Analog Converter (DAC), which creates low-level analog 
+signals.
+
+Programmed properly, the FM synthesizer can produce fairly nice instrument 
+sounds, including surprisingly good drums.  The key phrase here is "fairly 
+nice."  If you want to create a mood, you can do it with FM synthesis.  
+However, you cannot realistically reproduce the sound of most acoustic 
+instruments (FM does a better job with "electronic" sounds).
+
+Music is created by a musician, a computer, and sequencer software.  Usually 
+he'll use a (music) keyboard controller to enter note data, although some 
+musicians may type it in on their computer's keyboard.
+
+The result of the musician's toil and effort, the .MID file, is a collection 
+of note information, but it isn't sufficient to make music; it contains no 
+information about what the instruments should sound like.  A patch bank, 
+which is a set of instrument definitions, fills this gap.  This nomenclature 
+comes from the old days when technicians plugged patch cords into racks of 
+equipment to change synthesizer sounds.  Today, patch is a synonym for a 
+single musical instrument sound.  
+
+The OPL FM chip uses eleven parameters to describe an instrument.  A single
+instrument patch is therefore 11 bytes (plus a header and some waste).  
+Software such as Symphonix OPL Patch Editor/Librarian by Flashpoint 
+Productions (included with the registered version of the STK) is the best way 
+to tinker with patches.
+
+Collections of patches are stored in instrument bank files (.IBK format).  
+Although you can put any instrument at any index in the file, you're going 
+to discover that only songs custom-written for that instrument bank file will 
+play correctly.  Other songs will probably sound totally unacceptable.
+
+Enter the General MIDI standard, which specifies all 128 patches (e.g. 
+instrument 1 is Grand Piano).  Although,  for FM synthesis, General MIDI 
+compliance is not required, we strongly recommend it.  When the industry 
+moves to wavetable boards, [Eventually, all sound hardware will
+support General MIDI and wavetable.  But today's installed base is about 99% 
+FM and 1% wavetable.  Sales of FM hardware are still much higher than 
+wavetable.  Wavetable sales are projected to surpass FM sales in 1996.  
+Wavetable installations will surpass FM no earlier than 1997.  Considering 
+this, and the fact that many wave table boards also include or emulate FM, we 
+believe FM is far more important than wavetable right now.  Good FM is 
+currently a big market advantage.] your music will sound good on most boards.
+
+		Digital Audio
+
+In digital audio, an analog waveform is translated into the digital domain by 
+sampling (i.e. measuring) the amplitude of the wave at regular intervals.  
+The sampling rate is the frequency at which this is done.
+
+As Nyquist proved, the sampling rate must be at least twice as high as the 
+highest frequency in the waveform being sampled, or else aliasing occurs.  
+When this happens, the sound takes on an unpleasant metallic overtone.
+
+Let's say you're recording the sound of glass breaking, which includes some 
+very high frequencies--we'll assume up to about 11 KHz.  Unless you're using
+a low-pass analog filter (the Sound Blasters have several) to cut out high 
+frequencies, you should sample at 22 KHz or higher.
+
+Note: sampling at very low rates will have undesirable side-effects.  Speech 
+will be lisped, and in general, everything will sound dull.
+
+Dynamic range, which is the difference between the softest and loudest
+sounds, is also important.  16-bit samples sound better than 8-bit samples 
+because the extra byte allows more precision, and more contrast between soft 
+and loud.
+
+It is important to record your sound effects at a low volume, if you plan on 
+playing more than one or two simultaneously.  You can also compress the 
+dynamic range when you prepare the sound.  This will help you avoid clipping 
+(i.e. exceeding the dynamic range of the playback hardware).
+
+General Guidelines
+
+		Don't Touch That Compiler Yet!
+
+Before you can bring sound into your program, you must convert the .MID and 
+.VOC files into formats which are quickly and easily parsed at run-time.  
+Use MID2DWM and VOC2DWD, respectively.  See the Utilities heading in the 
+Reference section for  more information on how to use these programs.
+
+		The Autodetect
+
+Before you can initialize the STK, you must know the sound hardware settings: 
+base port, DMA channel, and IRQ level.  You can ask the user, you can parse 
+the BLASTER environment variable, or you can use the STK's autodetect.  The 
+last is the recommended method.
+
+Using the autodetect is easy.  Create two structs, one of type 
+dws_DETECTOVERRIDES, and the other of type dws_DETECTRESULTS.  Set the 
+baseport, digdma, and digirq fields of the overrides struct to 65535 (to 
+autodetect them), or initialize them with their correct values.  Either way, 
+call dws_DetectHardWare, passing the address of both structs as parameters.
+The results struct will be filled in.
+
+Note: you must call dws_DetectHardWare even if you know these values in
+advance.  The reason is that it stores information in the reserved field.
+
+Note: If you write the settings to a disk file (not recommended), make sure 
+you write the entire struct.  dws_Init requires the information in the 
+reserved field, and may crash if it's not there.
+
+For more information about these and other structures, see Data Structures in 
+the Reference section.
+
+Many sound boards require the user to load drivers from either CONFIG.SYS or 
+AUTOEXEC.BAT (e.g. the Advanced Gravis Ultrasound and SBOS)  These 
+drivers must be loaded before any STK-enabled software is run.  If the driver 
+isn't loaded, some boards may not respond, or worse yet, could take on 
+default values which conflict with other hardware.  This last case is a major 
+potential problem and could cause a crash. 
+
+In the overwhelming majority of cases, the autodetect will quietly do its job.  
+It is robust, and there are only two known (obscure) failure cases.  If you 
+find any others, please report them to DiamondWare!
+
+The first failure case occurs only when the STK is running in a Microsoft 
+Windows Enhanced-mode DOS box.  If the user has another card which is 
+constantly doing DMA on an 8-bit channel, the STK will crash the machine.  
+The only card known to do this is the NE2100 bus mastering ethernet adapter, 
+which uses a 16-bit DMA channel 99% of the time.  (It's an expensive, 
+high-performance card; running it on an 8-bit DMA channel is like putting 
+85-octane gas into a sports car.)  Other devices that use DMA, like CD-ROM 
+and SCSI controllers, do not perform DMA transfers unless they are in use, 
+and will not cause any problems with the STK.
+
+The second failure case occurs only with Aria 16 and Aria 16se cards.  If 
+the Sound Blaster portion of the board is configured for IRQ 2/9, the 
+autodetect will incorrectly return the IRQ used by the MIDI portion of the 
+board, rather than that of the digitized portion.
+
+		Initializing the STK
+
+After calling dws_DetectHardWare, you'll need a struct of type dws_IDEAL.
+Its fields are requests for STK services.  Set each to the desired values.  
+Then call dws_Init, passing the address of the dws_DETECTRESULTS and 
+dws_IDEAL structs as parameters.
+
+This struct is here for three reasons.  The first is to tell the STK the 
+initial sampling rate you want.  The second reason is to conserve CPU cycles.  
+The STK will run faster with fewer digital voices.  The last reason is that 
+future versions of the STK will offer more features (e.g. 16-bit, stereo, 
+etc.)  You may not want some or all of these services.  Initialize this 
+struct properly, and you will easily incorporate STK upgrades into your 
+programs.
+
+When the STK initializes, it resets the sound hardware to a 100% known state, 
+including setting the mixer to maximum volume.  It also sets up its own 
+internal data structures, Interrupt Service Routines (ISRs), etc.  Few STK 
+functions will work until you call dws_Init.
+
+		The Hardware Timer
+
+Next, initialize the hardware timer.  The STK must be called at a relatively 
+high rate.  The DiamondWare Timer (DWT) module will do the trick, or you can 
+use your own code.
+
+If you're going to use the DWT, call dwt_Init, passing it a rate constant as 
+a parameter.  The DWT will do all timing functions necessary to the STK (and 
+keep time for your game, too).  See dwt_Init in the Function Reference for 
+complete information.
+
+If you have your own code, initialize it now.  Make sure it will call 
+dws_Update once during each hardware timer interrupt.  The DWT will not 
+interfere, or even link into your application.
+
+		Initiating Playback
+
+To play a song, first allocate a buffer large enough to hold the .DWM file, 
+and then read it in.  Create a struct of type dws_MPlay; set the track field 
+to point to this buffer, and the count field to the number of times to play.  
+Now call dws_Mplay.  The song will play in the background.
+
+To play a sound effect, allocate a buffer, and read in the .DWD file.  Create 
+a struct of type dws_DPlay; set the snd field to point to the buffer, the 
+count field to the number of times to play, ignore priority field (for now), 
+and set the presnd field to 0 (for now).  Now call dws_DPlay.  The sound will 
+play in the background.
+
+For more information on these structs and calls, see the Advanced Tutorial 
+section, or The Functions heading and The Data Structures heading in the 
+Reference section.
+
+Note to BASIC users: make sure that your buffers don't move around during 
+"garbage collection".
+
+		The Rules of the Game
+
+The STK can play one music track, and up to sixteen sound effects (at the same 
+sampling rate) at the same time.  Once a song or sound is playing, you can 
+let it play without doing anything else.  You can even make DOS calls.
+
+In the mode used by the STK, the FM chip allows up to 6 musical instruments 
+and 5 drums to play simultaneously.  Drums can play and replay, still sounding 
+good, but it's important that your music  sound (and/or sustain) no more than 
+6 melody notes at a time.  The STK player will automatically drop notes out 
+(though it won't crash), but a musician would inevitably make a better 
+decision as to which notes are important than any computer algorithm.
+
+There are five drums built in to the STK, chosen as a reasonable compromise: 
+bass drum, snare, high hat, tom tom, and top cymbal.  All other drums are 
+mapped to these five.
+
+The STK will refuse to exceed the dynamic range of the hardware it's playing 
+on.  This means that if you try to play 4 sound effects which all use the 
+full 8 bits of dynamic range, you'll only hear the one with the highest 
+priority.  Until it ends, the others will not be played, although they will 
+continue to advance silently.  If the sound with the highest priority ends, 
+any remaining sounds are added back in, to the limit of the dynamic range of 
+the playback hardware.
+
+		Playback Status
+
+The functions dws_MSongStatus and dws_DSoundStatus determine whether a song 
+or sound is playing or finished.  Each of these functions requires you to 
+create a status variable for them to use.  To get the status of your music, 
+pass the address of the status variable to dws_MSongStatus.  To query the 
+status of a specific sound effect, pass the address of the status variable, 
+as well as its ID  (from the soundnum field of its dws_DPLAY structure) to 
+dws_DSoundStatus.
+
+Each bit of the status variable is a flag.  Perform a bitwise and between the 
+status variable and the playback condition you would like to test.  For 
+example, dws_MSONGSTATUSPLAYING & status evaluates to a 1 if the music is 
+still playing, and dws_DSOUNDSTATUSPLAYING & status evaluates to a 1 if the 
+sound effect is still playing.  For a complete list of conditions, refer to 
+both routines in the The Functions heading in the Reference section.
+
+		Keeping Time
+
+The DWT provides a double-word (32 bit, unsigned) timer, which begins at 0 
+when DWT is initialized, and increments once per timer interrupt.  Calling
+dwt_MasterTick returns the number of clock ticks since time began (i.e. when 
+you called dwt_Init).  dwt_Pause and dwt_UnPause suspend and restart the 
+master clock, respectively.  They don't affect either music or digitized 
+sound playback.
+
+		Tracking Errors
+
+Most functions in the STK return a word (16-bit, unsigned) value. This is a 
+boolean value, indicating the success/failure of the function.  True (1) is 
+success, and false (0) means that an error has occured.  In the case of an 
+error, call dws_ErrNo to determine what happened.
+
+dws_ErrNo behaves much like the errno variable in the C standard library.  
+Initially it's 0, and it's only changed when a function encounters an error.  
+It's important to check it after each call which fails, or else you won't 
+know which one generated the error.  Under The Functions, in the Reference 
+section, there is a list of errors for each function.  You may assume this 
+list is exhaustive; if an error isn't listed for a given function, then that 
+function cannot generate that error.
+
+		Stopping Playback
+
+Call dws_MPause or dws_MUnPause to suspend or restart music playback.  Call 
+dws_MClear to stop the current song.  Make sure you stop music playback before 
+you deallocate the song buffer, or you may get some noise.
+
+Call dws_DPause or dws_DUnPause to suspend or restart all digitized sound 
+playback.  Call dws_DClear to stop all currently-playing sounds.  
+Call dws_DDiscard to stop a particular sound from playing; this function 
+requires the sound's ID as a parameter (from the soundnum field of its 
+dws_DPLAY structure).  Call dws_DDiscardAO to stop all occurrences of a 
+digitized sound; this function requires a pointer to the sound's buffer.
+
+		Shutting Down
+
+Before exiting to DOS, you must clean up.  First, call dwt_Kill (or shut down 
+your own timer module).  Next, call dws_Kill.  Finally, deallocate any buffers 
+you may have allocated during execution.
+
+There is a problem in Microsoft Windows Enhanced-mode 
+DOS boxes when the sound board is set to IRQ 2/9, and Windows isn't 
+configured for the sound board.  The first time an STK-using program 
+runs in this environment, it will work perfectly.  But if the user 
+exits the STK-using program, and restarts it before restarting Windows, 
+there will be no digitized sound (FM music will play normally).
+
+
+
+Tutorial 
+
+		MINAPP.C
+
+This tutorial will walk you through MINAPP.C, an application framework which 
+fulfills the minimum requirements for implementing the STK in a program.  It 
+is intended for learning the basics;  it does not check for STK errors at all.  
+The source code for the sample applications PLAYDWD, PLAYDWM, and FINDSB are 
+provided in C, Pascal, and BASIC on disk.  They include (more) robust 
+error-checking, and are highly commented.  Please review them as well.
+
+				Setting Up:  Includes and Variables
+
+#include <<stdio.h>>
+#include <<malloc.h>>
+#include "dws.h"
+#include "dwt.h"
+
+void main (void)
+{
+	FILE *fp;
+	byte __far *sound, *song;
+	word mstatus, dstatus, msize, dsize;
+	dws_DETECTOVERRIDES dov;
+	dws_DETECTRESULTS   dres;
+	dws_IDEAL ideal;
+	dws_MPLAY mplay;
+	dws_DPLAY dplay;
+
+The standard C header file stdio.h is included for the file I/O functions, 
+and malloc.h to support dynamic memory allocation.  dws.h contains all the 
+STK prototypes, #defines, structures, and type definitions.  dwt.h provides 
+the same, for the DWT.
+
+MINAPP loads one sound effect, and one piece of music.  sound, a pointer, 
+holds the address of the sound effect buffer; song, another pointer, holds 
+the address of the music buffer.  dplay, a struct, holds all information 
+needed to play the sound effect; mplay, another struct, holds information for 
+playing the song.  dov, dres, and ideal are structs required for 
+initialization.
+
+				Loading Songs and Sounds
+
+/* ALLOCATE MEMORY FOR SOUND FILE AND LOAD IT */
+	fp = fopen("minapp.dwd", "rb");
+	fseek (fp, 0L, SEEK_END);
+	sound = _fmalloc (dsize=ftell (fp));
+	fseek (fp, 0L, SEEK_SET);
+	fread (sound, dsize, 1, fp);
+	fclose (fp);
+
+/* ALLOCATE MEMORY FOR SONG FILE AND LOAD IT */
+	fp = fopen("minapp.dwm", "rb");
+	fseek (fp, 0L, SEEK_END);
+	song = _fmalloc (msize=ftell (fp));
+	fseek (fp, 0L, SEEK_SET);
+	fread (song, msize, 1, fp);
+	fclose (fp);
+
+These two sections allocate buffers to store the music and the sound, then 
+read the files into them.  minapp.dwm began life as minapp.MID and gm.ibk, 
+and was converted by MID2DWM.  minapp.dwd began as MINAPP.VOC, and was 
+converted by VOC2DWD.
+
+				Initializing the STK
+
+/* AUTODETECT SOUND CARD */
+	dov.baseport = 65535;
+	dov.digdma	 = 65535;
+	dov.digirq	 = 65535;
+	dws_DetectHardWare (&dov, &dres);
+
+/* INITIALIZE DIAMONDWARE STK SYSTEM */
+	ideal.musictyp   = 1;
+	ideal.digtyp     = 8;
+	ideal.digrate    = 10989;
+	ideal.dignvoices = 16;
+	ideal.dignchan   = 1;
+	dws_Init (&dres, &ideal);
+
+Notice how all fields in the struct, dov, are set to 65535.  This tells
+dws_DetectHardWare to autodetect the corresponding sound hardware parameters.
+The results of this are returned in the dres struct.  We initialized the 
+ideal struct to request the desired STK services (in this case overkill, since 
+we only need one digitized voice).  When we call dws_Init, the sound hardware 
+and the STK are set up for business.
+
+				Optional Timer Module
+
+/* INITIALIZE OPTIONAL TIMER MODULE */
+	dwt_Init (dwt_72_8HZ);
+
+A PC bootstraps (starts up) with a rate of 18.2 clock ticks per second, but 
+the STK requires a higher rate.  Just as importantly, the STK must be called 
+during each clock tick.  The DiamondWare Timer module will do this.  We 
+recommend 72.8 Hz, a good compromise between music quality and Windows 
+DOS-box compatibility.  (If you don't care about Windows DOS boxes, use 
+145.6 Hz.)
+
+				Preparing Songs and Sounds
+
+/* PREPARE SONG FOR PLAYING */
+	mplay.track = song;
+	mplay.count = 1;
+
+/* PREPARE SOUND FOR PLAYING */
+	dplay.snd      = sound;
+	dplay.count    = 1;
+	dplay.priority = 1000;
+	dplay.presnd   = 0;
+	dws_DGetRateFromDWD (dplay.snd, &ideal.digrate);
+	dws_DSetRate (ideal.digrate);
+
+The mplay struct is set up so that a call to dws_MPlay will play the song 
+once.  The dplay struct is also set up.  A priority of 1000 is arbitrarily 
+chosen, but since no other sound effects will be playing in MINAPP, this field 
+has no practical effect.  The presnd field is also unused (set to 0), because 
+this example does not  sequence digital sounds.  The current playback rate is 
+set to the sampling rate at which the sound was recorded.
+
+				Initiating Playback
+
+/* PLAY SONG AND SOUND ONCE */
+	dws_MPlay (&mplay);
+	dws_DPlay (&dplay);
+
+A call to dws_MPlay starts the music, and a call to dws_DPlay begins playback 
+of the digitized sound effect.
+
+				Wait 'Til the Fat Lady Sings
+
+/* MAIN LOOP */
+	do
+	{
+		dws_DSoundStatus(dplay.soundnum, &dstatus);
+		dws_MSongStatus(&mstatus);
+	}
+	while ((mstatus & dws_MSONGSTATUSPLAYING) ||
+				 (dstatus & dws_DSOUNDSTATUSPLAYING));
+
+We query the song and sound status.  The status is placed in a bitfield 
+variable, via its address.  In the case of the music, we're interested in the 
+dws_MSONGSTATUSPLAYING field; in the case of the digitized sound effect, we're 
+interested in the dws_DSOUNDSTATUSPLAYING.  When this field is 1, it means 
+that the song or sound, respectively, is playing.
+
+				Shutting Down
+
+/* CLEAR ALL ALLOCATED MEMORY */
+	_ffree (song);
+	_ffree (sound);
+
+/* DE-INITIALIZE STK */
+	dwt_Kill();
+	dws_Kill();
+}
+
+The buffers containing the music and sound effect are now deallocated.  
+Normally, dws_DClear and dws_MClear would be called before freeing these 
+buffers, but since we know that no sounds are playing at the moment, the 
+calls are unnecessary.  The DWT is de-initialized first by calling dwt_Kill, 
+then the entire STK engine is shut down by calling dws_Kill.  That's  it!
+
+
+
+Advanced Tutorial 
+
+		Working with the Advanced Features
+
+The example code fragments below illustrate sequencing and polyphony. We 
+assume that the STK has been initialized.  sfx1 and sfx2 are digital sounds in
+memory.  The following shows how the two dws_DPLAY structures are set up:
+
+		dplay1.snd      = sfx1;
+		dplay2.snd      = sfx2;
+		dplay1.count    = 1;
+		dplay2.count    = 1;
+		dplay1.priority = 500;
+		dplay2.priority = 1000;
+		dplay1.presnd   = 0;
+		dplay2.presnd   = 0;
+
+Each sound effect is set to play once, and the second sound is given a higher 
+priority than the first.  The presnd field of both structs is not set for 
+sequencing.
+
+		Sequencing
+
+The presnd field allows you to sequence sounds to play one after the other.  
+The first sample of the second sound plays after the last sample of the first 
+sound.  The effect is that of a single sound, playing seamlessly.
+
+This feature is useful if you want to break a long sound into several pieces 
+which can fit into memory.	Or a sound may have several different
+continuations, depending on player input (e.g. a gun fires, continuing with 
+either a scream or a ricochet, depending on whether the bullet hits).
+
+Set the presnd field of a dplay struct to the soundnum of the sound you want 
+to sequence after, or use 0 if the sound is stand-alone.
+
+Note: if you specify a non-zero sound number (which corresponds to a sound 
+actually playing), the value returned in soundnum is the same as the value 
+specified in presnd.  The new sound will not play immediately, but will wait 
+until the first sound is done.
+
+The priority field is not related to sequencing.
+
+
+ dws_DPlay (&dplay1);
+ dplay2.presnd = dplay1.soundnum;
+ dws_DPlay (&dplay2);
+
+This plays dplay1 followed by dplay2.  If you are sequencing more than two 
+sounds, call dws_DSoundStatus to determine when it's safe to sequence each 
+sound after the second.
+
+		Polyphony
+
+To play multiple digital sounds, call dws_DPlay more than once.
+
+The presnd field has no bearing on polyphony.
+
+
+	dws_DPlay (&dplay1);
+	dws_DPlay (&dplay2);
+
+The sounds start simultaneously.  dplay1, the first sound, has a  priority of 
+500.  dplay2 has a priority of 1000.
+
+These numbers are arbitrary; it is the relationship between them that counts.  
+Priorities of 1 and 2 will have the same results.
+
+Note: if these two sounds together do not exceed the dynamic range of the 
+hardware, they'll both play.  However, if the total dynamic range used by both
+sounds exceeds 8 bits, then you will hear only the second sound (its priority 
+is higher).  If the second sound is shorter, then the first sound will be 
+heard when the second one ends.  Until then, it will advance silently.
+
+
+
+Reference
+
+This section of the manual is broken down into several headings: The 
+Functions, The Errors, The Data Structures, The Utilities, and The File 
+Formats.
+
+		The Functions
+
+				Preamble
+
+There are two headers provided with the STK.  The first is for the sound 
+library (DWS.H for C and DWS.BI for BASIC), and the other for the DiamondWare 
+Timer module (DWT.H for C and DWT.BI for BASIC).
+
+For Turbo Pascal version 6 and 7, there are two .TPU files provided.  
+Additionally, although it's not strictly necessary, DWS.PAS (which also 
+contains the timer module) is provided so you can see how everything is 
+declared.  The sound library header declares the constants for each error the 
+STK can generate, some bit field constants, the data structures used by the 
+STK, and the prototypes of the functions.
+
+This is a complete list, in alphabetical order, of functions provided by the 
+STK and the optional timer module.  Each function will be listed with a 
+general description, as well as the declaration syntax (prototype) for C, 
+Pascal, and BASIC (in that order), parameters, return value, possible error 
+conditions, and related functions.
+
+Most STK functions have a boolean return value to indicate success (true), or 
+error (false).  If an error occurs, call dws_ErrNo to determine what happened.  
+Unless otherwise noted, the STK will perform no action during any call which 
+returns an error, including modifiying structs--all return values are 
+undefined.
+
+Most errors are provided to help you integrate the STK into your application; 
+once your program is stable, you should not expect to see any errors occur.
+
+All functions and all pointers are far.  All functions use the Pascal calling 
+convention.
+
+				The Optional Timer Module
+
+If you have written your own hardware timer code which reprograms the timer 
+rate, then you don't need the DWT.  Simply don't call our module, and it won't 
+link into your application.
+
+The DWT reprograms the hardware timer to run at a much faster rate than 
+normal, while keeping the DOS and BIOS clocks happy by calling them at 
+18.2 Hz (like they expect).  The DWT makes the call to dws_Update, which is 
+required to keep the STK happy.  And DWT will also keep time in a way useful 
+for video games and multimedia applications.  Even if the user has no sound 
+hardware installed, you can still use DWT for its timing functions without any 
+ill effect.
+
+				
+
+dws_DClear
+
+	Prototypes
+
+	word dws_DClear(void);
+	function dws_DClear : word;
+	DECLARE FUNCTION dwsDClear% ALIAS "DWS_DCLEAR" ()
+
+	Description
+	
+	This function stops all digitized sounds from playing.  Returns success, 
+	even if no sounds are currently playing.
+
+	Parameters
+	
+	None.
+
+	Return value
+	
+	Boolean success.
+
+	See also
+	
+	dws_DPause, dws_DDiscard, 
+	dws_DDiscardAO, dws_DPlay
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+
+
+
+dws_DDiscard
+
+	Prototypes
+
+	word dws_DDiscard(word sndnum);
+	function dws_DDiscard(sndnum : word) : word;
+	DECLARE FUNCTION dwsDDiscard% ALIAS
+		"DWS_DDISCARD" (BYVAL sndnum%)
+
+	Description
+	
+	This function shuts off a single sound instance.
+
+	If you attempt to discard a sound which is not currently playing, this 
+	function will return success.
+
+	Parameters
+	
+	sndnum is the sound you wish to discard, from the sound's dws_DPlay 
+	structure.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DDiscardAO, dws_DPause, dws_DClear, dws_DPlay
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED
+
+
+
+dws_DDiscardAO
+
+	Prototypes
+
+	word dws_DDiscardAO(byte *snd);
+	function dws_DDiscardAO(snd : dws_BTPTR) : word;
+	DECLARE FUNCTION dwsDDiscardAO% ALIAS
+		"DWS_DDISCARDAO" (BYVAL snd&)
+
+	Description
+	
+	This function discards all occurrences of one sound effect (.DWD file) that 
+	is currently playing.  If you are playing the same sound effect several 
+	times, this is an easy way to stop them all--useful before you deallocate 
+	the sound's memory buffer, for example.
+
+	This function requires that you specify the sound by the address of its 
+	buffer in memory.
+
+	Note: if any sound killed by this function has a sequenced sound waiting to 
+	play after it, the sequenced sound will be killed also.
+
+	Parameters
+	
+	snd is a pointer to the buffer storing the .DWD sound effect.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DDiscard, dws_DPause, dws_DClear, dws_DPlay
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED, dws_D_NOTADWD, dws_D_NOTSUPPORTEDVER, 
+	dws_D_INTERNALERROR
+
+				
+
+dws_DetectHardWare
+
+	Prototypes
+
+	word dws_DetectHardWare(dws_DETECTOVERRIDES *dov, dws_DETECTRESULTS *dr);
+	function dws_DetectHardWare(dov : dws_DOPTR; dr :dws_DRPTR) : word;
+	DECLARE FUNCTION dwsDetectHardWare% ALIAS "dws_DetectHardWare" (SEG dov AS
+		dwsDETECTOVERRIDES, SEG dr AS dwsDETECTRESULTS)
+
+	Description
+
+	This is the STK's hardware autodetect.  It detects card settings, or 
+	verifies settings you put in dov.  Upon return, dr will be filled with the 
+	autodetection results.  DiamondWare recommends calling this function at the 
+	beginning of your program, each time it is run, so that if the user changes 
+	hardware settings between runs, your program will still work.
+
+	Parameters
+
+	dov is a pointer to a dws_DETECTOVERRIDES struct.  Set every field with 
+	either a 65535 (to autodetect), or an override (user setting).	User setting
+	values will be accepted on faith (sort of).
+
+	dr is a pointer to a dws_DETECTRESULTS structure, where the function will 
+	return its results.
+
+	The reserved array in this struct holds important information; if you write 
+	the contents of the struct out to a file, write the entire struct!  dws_Init 
+	requires all of this information; without it, the STK could crash the 
+	computer.
+
+	The bitfield capability indicates supported features:  
+
+	0                                       //no sound hardware
+	dws_capability_FM                       //music
+	dws_capability_DIG                      //digitized sounds
+	dws_capability_FM | dws_capability_DIG  //Both
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_Init, dws_Kill
+
+	Errors
+
+	dws_ALREADYINITTED, dws_DetectHardware_UNSTABLESYSTEM,
+	dws_DetectHardware_BADBASEPORT, dws_DetectHardware_BADDMA,
+	dws_DetectHardware_BADIRQ
+
+	If the machine becomes unstable more than twice, please contact DiamondWare!
+
+
+
+dws_DGetRate
+
+	Prototypes
+
+	word dws_DGetRate(word *result);
+	function dws_DGetRate(result : dws_WDPTR) : word;
+	DECLARE FUNCTION dwsDGetRate% ALIAS
+		"DWS_DGETRATE" (SEG result%)
+
+	Description
+
+	This function returns the sampling rate to which the hardware is currently 
+	set.
+
+	Parameters
+
+	result is a pointer to the variable that will store the current sampling 
+	rate.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DGetRateFromDWD, dws_DSetRate
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED
+
+
+
+dws_DGetRateFromDWD
+
+	Prototypes
+
+	word dws_DGetRateFromDWD(byte *snd, word *result);
+	dws_DGetRateFromDWD(snd : dws_BTPTR; result : dws_WDPTR) : word;
+	DECLARE FUNCTION dwsDGetRateFromDWD% ALIAS "DWS_DGETRATEFROMDWD" 
+		(BYVAL snd&, SEG result%)
+
+	Description
+
+	This function returns the sampling rate at which a .DWD file was recorded.
+
+	Note: this function will work before dws_Init is called.
+
+	Parameters
+	
+	snd is a pointer to a buffer containing a .DWD file.
+
+	result is a pointer to a variable that will store the recorded sampling 
+	rate.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DGetRate, dws_DSetRate
+
+	Errors
+
+	dws_D_NOTADWD, dws_D_NOTSUPPORTEDVER
+
+
+
+dws_DPause
+
+	Prototypes
+
+	word dws_DPause(void);
+	function dws_DPause : word;
+	DECLARE FUNCTION dwsDPause% ALIAS "DWS_DPAUSE" ()
+
+	Description
+
+	This function pauses all digitized sound playback.
+
+	Note: all calls after the first will have no effect until dws_DUnPause is 
+	called.  The STK does not maintain a "pause count".
+
+	Parameters
+
+	None.
+
+	Return value
+	
+	Boolean success.
+
+	See also
+
+	dws_DUnPause, dws_Discard, dws_DiscardAO, dws_DClear
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+
+
+
+dws_DPlay
+
+	Prototypes
+
+	word dws_DPlay(dws_DPLAY *dplay);
+	function dws_DPlay(dplay : dws_DPPTR) : word;
+	DECLARE FUNCTION dwsDPlay% ALIAS "DWS_DPLAY"(SEG
+		dplay AS dwsDPLAY)
+
+	Description
+	
+	This function plays a digitized sound.
+
+	Parameters
+	
+	dplay is a pointer to a filled dws_DPLAY struct, which contains:
+
+		snd      pointer to a buffer with a .DWD
+		count    number of times to play; 0 means repeat indefinitely
+		priority relative to other sounds; low priority snds may drop
+		soundnum unique ID--returned by the STK
+		presnd   ID of sound to sequence after; 0 means don't seq
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DDiscard, dws_DDiscardAO, dws_DClear, dws_DSoundStatus
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED, dws_D_NOTADWD, dws_D_NOTSUPPORTEDVER, 
+	dws_D_INTERNALERROR, dws_DPlay_NOSPACEFORSOUND
+
+
+
+dws_DSetRate
+
+	Prototypes
+
+	word dws_DSetRate(word frequency);
+	function dws_DSetRate(frequency : word) : word;
+	DECLARE FUNCTION dwsDSetRate% ALIAS
+		"DWS_DSETRATE" (BYVAL frequency%)
+
+	Description
+
+	This function sets the digitized sampling rate.  If sounds are currently 
+	playing, this might sound weird.
+
+	Note: some sound boards don't support every rate allowed by the 
+	Sound Blasters.  Many sound boards will produce an audible click when the 
+	rate is changed on the fly.
+
+	The STK supports sampling rates from 4 KHz to 24 KHz.
+
+	Parameters
+
+	frequency is the new sampling rate to use.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DGetRate, dws_DGetRateFromDWD
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED, dws_DSetRate_FREQTOLOW, 
+	dws_DSetRate_FREQTOHIGH
+
+
+
+dws_DSoundStatus
+
+	Prototypes
+
+	word dws_DSoundStatus(word sndnum, word *result);
+	function dws_DSoundStatus(sndnum : word; result : dws_WDPTR) : word;
+	DECLARE FUNCTION dwsDSoundStatus% ALIAS "DWS_DSOUNDSTATUS"(BYVAL sndnum%, 
+		SEG result%)
+
+	Description
+
+	Internally, the STK stores each sound in a slot.  Each slot can hold up to 
+	two sounds--an active sound and a sequenced sound (which becomes active when 
+	the currently active sound ends).  The slot is identified by the ID of the 
+	sound playing in it.
+
+	This function queries the status of a slot.
+
+	Parameters
+	
+	sndnum is the sound's unique ID.
+
+	result is a pointer to a variable to hold the returned status: 
+
+	0                                          //no sound with this ID
+	dws_DSTATUSCURRENT                         //sound is currently playing
+	dws_DSTATUSSEQUENCED                       //sound is sequenced
+	dws_DSTATUSCURRENT | dws_DSTATUSSEQUENCED  //both
+
+	In order for a slot to contain a sequenced sound, it must also hold a 
+	playing sound.  If you ever encounter a case where a slot contains only a 
+	sequenced sound, please report it to DiamondWare.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DPlay
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+	
+
+
+dws_DUnPause
+
+	Prototypes
+
+	word dws_DUnPause(void);
+	function dws_DUnPause : word;
+	DECLARE FUNCTION dwsDUnPause% ALIAS "DWS_DUNPAUSE" ()
+
+	Description
+
+	This function resumes digitized playback, if it was previously paused 
+	by dws_DPause.
+
+	All sounds will continue where they left off.
+
+	Note: all calls after the first will have no effect until dws_DPause is 
+	called again.  The STK does not maintain a "pause count".
+
+	Parameters
+
+	None.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_DPause
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+
+
+
+dws_ErrNo
+
+	Prototypes
+
+	word dws_ErrNo(void);
+	function dws_ErrNo : word;
+	DECLARE FUNCTION dwsErrNo% ALIAS "DWS_ERRNO" ()
+
+	Description
+	
+	This function returns the last error triggered by an STK function.  Call it 
+	after any STK function returns false as its boolean success indicator.
+
+	Successful STK calls do not affect the return value of dws_ErrNo.
+
+	Parameters
+
+	None.
+
+	Return value
+	
+	The last STK error.
+
+	See also
+
+	None.
+
+	Errors
+
+	None.
+
+
+
+dws_Init
+
+	Prototypes
+
+	word dws_Init(dws_DETECTRESULTS *dr, dws_IDEAL *ideal);
+	function dws_Init(dr : dws_DRPTR; ideal : dws_IDPTR) : word;
+	DECLARE FUNCTION dwsInit% ALIAS "DWS_INIT" (SEG dr AS dwsDETECTRESULTS, 
+		SEG ideal AS dwsIDEAL)
+
+	Description
+
+	This function configures and initializes the hardware and the STK internals.  
+	Most STK calls won't work until after this call.
+
+	The exceptions are dws_Update, dws_DetectHardWare, dws_ErrNo, and
+	dws_DGetRateFromDWD.
+
+	Parameters
+	
+	dr is a pointer to a dws_DETECTRESULTS struct that has been filled in by a 
+	call to dws_DetectHardWare.
+
+	ideal is a pointer to a dws_IDEAL structure, which you must fill in with 
+	your requested settings.  The programmer might not want the user's sound 
+	board running to its limit, and/or the user's sound board may not support 
+	every feature of the STK.
+
+	Note: the STK supports sample rates from 4 KHz to 24 KHz.
+
+	Return value
+	
+	Boolean success.
+
+	See also
+
+	dws_DetectHardWare, dws_Kill, dws_Update
+
+	Errors
+
+	dws_ALREADYINITTED
+
+
+
+dws_Kill
+
+	Prototypes
+
+	word dws_Kill(void);
+	function dws_Kill : word;
+	DECLARE FUNCTION dwsKill% ALIAS "DWS_KILL"()
+
+	Description
+
+	This function closes down the STK.  You must call it before your program 
+	terminates.
+
+	Note: make sure you cover every exit path from your program, including DOS 
+	critical errors!  Failure to do so will leave the machine in a bad state.  
+	The sound board will make noise forever.  The DMA controller will continue 
+	transferring.  The sound hardware will continue to generate IRQ's.  When the 
+	next program is loaded, it will overwrite the STK's Interrupt Service 
+	Routine (ISR)--and the machine will crash.
+
+	Parameters
+
+	None.
+
+	Return value
+	
+	Boolean success.
+
+	See also
+
+	dws_Init, dws_DetectHardWare, dws_Update
+
+	Errors
+
+	dws_NOTINITTED, dws_Kill_CANTUNHOOKISR
+
+	If the STK can't unhook its ISR, it probably means the user installed a TSR 
+	which handles the sound board's IRQ.  Whatever it accomplished(?), it's now 
+	preventing the STK from properly unhooking itself.  Tell the user to get rid 
+	of it, and call dws_Kill again.
+
+
+
+dws_MClear
+
+	Prototypes
+
+	word dws_MClear(void);
+	function dws_MClear : word;
+	DECLARE FUNCTION dwsMClear% ALIAS "DWS_MCLEAR" ()
+
+	Description
+
+	This function stops music playback.
+
+	Parameters
+		
+	None.
+
+	Return value
+	
+	Boolean success.
+
+	See also
+
+	dws_MPause, dws_MPlay
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+
+
+
+dws_MPause
+
+	Prototypes
+
+	word dws_MPause(void);
+	function dws_MPause : word;
+	DECLARE FUNCTION dwsMPause% ALIAS "DWS_MPAUSE" ()
+
+	Description
+
+	This function pauses music playback.
+
+	Note: all calls after the first will have no effect until dws_MUnPause is 
+	called.  The STK does not maintain a "pause count".
+
+	Parameters
+	
+	None.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_MUnPause, dws_MClear, dws_MPlay
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+
+
+
+dws_MPlay
+
+	Prototypes
+
+	word dws_MPlay(dws_MPLAY *mplay);
+	function dws_MPlay(mplay : dws_MPPTR) : word;
+	DECLARE FUNCTION dwsMPlay% ALIAS "DWS_MPLAY" (SEG mplay AS dwsMPLAY)
+
+	Description
+
+	This function starts playing a song.
+
+	Parameters
+
+	mplay is a pointer to a dws_MPLAY struct, which you must fill in.  The 
+	fields are:
+
+	track   pointer to a buffer which contains a .DWM file.
+	count   number of times to play; 0 means repeat indefinitely.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_MClear, dws_MPause, dws_MSongStatus
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED, dws_MPlay_NOTADWM, 
+	dws_MPlay_NOTSUPPORTEDVER, dws_MPlay_INTERNALERROR
+
+
+
+dws_MSongStatus
+
+	Prototypes
+
+	word dws_MSongStatus(word *status);
+	function dws_MSongStatus(result : dws_WDPTR) : word;
+	DECLARE FUNCTION dwsMSongStatus% ALIAS = "DWS_MSONGSTATUS" (SEG result%)
+
+	Description
+
+	This function returns the status of the music playback engine.
+
+	Parameters
+
+	result is a pointer to a variable to hold the returned status:
+
+		0                                             //no song loaded
+		dws_MSONGSTATUSPLAYING                        //song playing
+		dws_MSONGSTATUSPAUSED                         //no song loaded, STK paused
+		dws_MSONGSTATUSPLAYING | dws_MSONGSTATUSPAUSED//Song loaded but paused
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_MPlay
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+
+
+
+dws_MUnPause
+
+	Prototypes
+
+	word dws_MUnPause(void);
+	function dws_MUnPause : word;
+	DECLARE FUNCTION dwsMUnPause% ALIAS "DWS_MUNPAUSE" ()
+
+	Description
+	
+	This function unpauses music paused by dws_MPause.  The music will continue 
+	where it left off, save that any sustaining notes will not start until their 
+	next key on.
+
+	Note: all calls after the first will have no effect until dws_MPause is 
+	called again.  The STK does not maintain a "pause count".
+
+	Parameters
+
+	None.
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_MPause
+
+	Errors
+
+	dws_NOTINITED, dws_NOTSUPPORTED
+
+
+
+dws_Update
+
+	Prototypes
+
+	void __loadds __saveregs dws_Update(void);
+	procedure dws_Update;
+	SUB dwsUpdate ALIAS "DWS_UPDATE" ()
+
+	Description
+
+	This function keeps the STK going.  Call it regularly and frequently.
+
+	If you're using the DWT, don't call dws_Update!  Everything has been taken 
+	care of.
+
+	If you are using your own timer handler, you need to call dws_Update every 
+	time you get your interrupt.  dws_Update will load the registers it needs, 
+	and restore the caller's registers before returning.  Note that this 
+	function is to be called, not jumped to.  It returns with a retf, not an 
+	iret.
+
+	Parameters
+
+	None.
+
+	Return value
+
+	None.
+
+	See also
+
+	dws_Init, dwt_Init, dws_Kill, dwt_Kill
+
+	Errors
+
+	None
+
+
+
+dws_XDig
+
+	Prototypes
+
+	word dws_XDig(word volume);
+	function dws_XDig(volume : word) : word;
+	DECLARE FUNCTION dwsXDig% ALIAS "DWS_XDIG" (BYVAL volume%)
+
+	Description
+	
+	This function sets the digitized volume of the mixer.
+
+	Note: dws_Init sets the digital volume to maximum.
+
+	Parameters
+
+	volume is the digitized sound level (0=min, 255=max).
+
+	Return value
+	
+	Boolean success.
+
+	See also
+
+	dws_XMusic, dws_XMaster
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED, dws_X_BADINPUT
+
+
+
+dws_XMaster
+
+	Prototypes
+
+	word dws_XMaster(word volume);
+	function dws_XMaster(volume : word) : word;
+	DECLARE FUNCTION dwsXMaster% ALIAS "DWS_XMASTER" (BYVAL volume%)
+
+	Description
+
+	This function sets the overall volume of the mixer.
+
+	Note: dws_Init sets the master volume to maximum.
+
+	Parameters
+	
+	volume is the master sound level (0=min, 255=max).
+
+	Return value
+	
+	Boolean success.
+
+	See also
+
+	dws_XDig, dws_XMusic
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED, dws_X_BADINPUT
+
+
+
+dws_XMusic
+
+	Prototypes
+
+	word dws_XMusic(word volume);
+	function dws_XMusic(volume : word) : word;
+	DECLARE FUNCTION dwsXMusic% ALIAS "DWS_XMUSIC" (BYVAL volume%)
+
+	Description
+
+	This function sets the music volume of the mixer.
+
+	Note: dws_Init sets the music volume to maximum.
+
+	Parameters
+
+	volume is the music sound level (0=min, 255=max).
+
+	Return value
+
+	Boolean success.
+
+	See also
+
+	dws_XDig, dws_XMaster
+
+	Errors
+
+	dws_NOTINITTED, dws_NOTSUPPORTED, dws_X_BADINPUT
+
+
+
+dwt_Init
+
+	Prototypes
+
+	void dwt_Init(word rate);
+	procedure dwt_Init(rate : word);
+	DECLARE SUB dwtInit ALIAS "DWT_INIT" (BYVAL rate%)
+
+	Description
+
+	This function initializes the timer hardware and DWT internals.
+
+	Call this only if you're using the DWT.  Use the DWT only if you aren't 
+	reprogramming the hardware timer.
+
+	None of the DWT functions will work until this function is called.
+
+	Parameters
+	
+	rate is one of the four constants:
+		dwt_18_2HZ
+		dwt_36_4HZ
+		dwt_72_8HZ
+		dwt_145_6HZ
+
+	Return value
+
+	None.
+
+	See also
+
+	dws_Update, dwt_Kill, dwt_MasterTick
+
+
+
+dwt_Kill
+
+	Prototypes
+
+	void dwt_Kill(void);
+	procedure dwt_Kill;
+	DECLARE SUB dwtKill ALIAS "DWT_KILL" ()
+
+	Description
+	
+	This function closes down the DWT.  If you used the DWT, you must call 
+	dwt_Kill before your program terminates.
+
+	Note: make sure you cover every exit path from your program, including DOS 
+	critical errors!  Failure to do so will leave the machine in a bad state.  
+	When the next program is loaded, it will overwrite the DWT's Interrupt 
+	Service Routine (ISR)--and the machine will crash.
+
+	Parameters
+
+	None.
+
+	Return value
+
+	None.
+
+	See also
+
+	dws_Update, dwt_Init
+
+				
+				
+dwt_MasterTick
+
+	Prototypes
+
+	dword dwt_MasterTick(void);
+	dwt_MasterTick : longint;
+	DECLARE FUNCTION dwtMasterTick& ALIAS "DWT_MASTERTICK" ()
+
+	Description
+	
+	This function queries the value of the master timer.
+
+	The master timer is reset to 0 in dwt_Init, and is incremented at the DWT 
+	timer rate.
+
+	Parameters
+
+	None.
+
+	Return value
+	
+	Number of clock ticks since DWT was initialized.
+
+	See also
+
+	dwt_Init, dwt_Pause, dwt_UnPause
+
+				
+
+dwt_Pause
+
+	Prototypes
+
+	void dwt_Pause(void);
+	procedure dwt_Pause;
+	DECLARE SUB dwtPause ALIAS "DWT_INIT" ()
+
+	Description
+	
+	This function pauses the master timer.
+
+	Note: this does not effect music or sound playback.
+
+	Note: all calls after the first will have no effect until dwt_UnPause is 
+	called.  The DWT does not maintain a "pause count".
+
+	Parameters
+	
+	None.
+
+	Return value
+	
+	None.
+
+	See also
+
+	dwt_MasterTick, dwt_UnPause
+
+
+
+dwt_UnPause
+
+	Prototypes
+
+	void dwt_UnPause(void);
+	procedure dwt_UnPause;
+	DECLARE SUB dwtUnPause ALIAS "DWT_KILL" ()
+
+	Description
+	
+	This function unpauses the master timer, if it was previously paused by 
+	dwt_Pause.
+
+	Note: all calls after the first will have no effect until dwt_Pause is 
+	called again.  The STK does not maintain a "pause count"
+
+	Parameters
+	
+	None.
+
+	Return value
+	
+	None.
+
+	See also
+
+	dwt_Pause, dwt_MasterTick
+
+		
+		The Errors
+
+				About the Error Listing
+
+This section discusses every possible STK error in numerical order.  See The 
+Functions to find the complete list of errors which may be flagged by any 
+given function.
+
+
+0.  dws_EZERO
+There was no error.  You didn't need to call dws_ErrNo.
+
+1.  dws_NOTINITTED
+The STK was not initialized when you called an STK function.
+
+2.  dws_ALREADYINITTED
+This call cannot be made after the STK is initialized.
+
+3.  dws_NOTSUPPORTED
+The installed hardware doesn't support the requested feature (music or sound).
+
+4. dws_DetectHardware_UNSTABLESYSTEM
+This system is now unstable.  Please report this to DiamondWare.
+
+5. dws_DetectHardware_BADBASEPORT
+6. dws_DetectHardware_BADDMA
+7. dws_DetectHardware_BADIRQ
+You tried to override the autodetect with an irrational value for base port, 
+DMA channel, or IRQ level, respectively. 
+
+8.  dws_Kill_CANTUNHOOKISR
+After the STK initialized, the user installed a TSR which hooked the sound 
+board's interrupt vector.  The STK can't shut down cleanly.  Tell the user to 
+kill the TSR.  Then call dws_Kill again.
+
+9.  dws_X_BADINPUT
+You attempted to set a mixer level (digitized, music, or master) to a value 
+outside the range 0-255.
+
+10.  dws_D_NOTADWD
+The buffer does not contain a valid .DWD file.
+
+11.  dws_D_NOTSUPPORTEDVER
+This .DWD file is the wrong version.  Please reconvert using the VOC2DWD which 
+came with this version of the STK.
+
+12.  dws_D_INTERNALERROR
+The STK encountered an invalid internal state.  Please report this to 
+DiamondWare.
+
+13.  dws_DPlay_NOSPACEFORSOUND
+You attempted to play a low-priority sound, but all slots were in use.  Try 
+increasing ideal.dignvoices.  If this error occurs with that set to 16, you're 
+playing too many sounds too fast.  Note: this one is a warning.  It's 
+reasonable to flag this error occasionally.  But if it occurs immediately, or 
+consistently, try calling dws_DPlay less often.
+
+14.   dws_DSetRate_FREQTOLOW
+15. dws_DSetRate_FREQTOHIGH
+You attempted to set the sampling rate to an invalid frequency.  The STK 
+supports sampling rates from 4 KHz to 24 KHz.
+
+16.  dws_MPlay_NOTADWM
+The buffer does not contain a valid .DWM file.
+
+17.  dws_MPlay_NOTSUPPORTEDVER
+This .DWM file is the wrong version.  Please reconvert using the MID2DWM which 
+came with this version of the STK.
+
+18.  dws_MPlay_INTERNALERROR
+The STK encountered an invalid internal state.  Please report this to 
+DiamondWare.
+
+		The Data Structures
+
+				Preamble
+
+In this section, the data structures are laid out in table form.  This is done 
+in the hope that it's easier to read than compiler declarations.  Obviously, 
+you can read the actual source files if you wish.
+
+Note to Pascal programmers: the following types were created to allow the 
+declaration of subroutines which take far pointers to their parameters.  
+Declaring a function:
+
+function FooBar(var x: word);
+
+passes a near pointer.  The STK expects far pointers.
+
+dws_DOPTR = ^dws_DETECTOVERRIDES;
+dws_DRPTR = ^dws_DETECTRESULTS;
+dws_IDPTR = ^dws_IDEAL;
+dws_DPPTR = ^dws_DPLAYREC;
+dws_MPPTR = ^dws_MPLAYREC;
+dws_WDPTR = ^word;
+dws_BTPTR = ^byte;
+
+
+
+The  dws_DETECTOVERRIDES struct
+
+Name      Size    I/O     Description
+------------------------------------------------------
+baseport  2       input   base address of sound board
+
+digdma    2       input   DMA channel
+
+digirq    2       input   IRQ level
+
+reserved  10      -na-    undocumented
+
+ 
+
+
+The dws_DETECTRESULTS struct
+
+Name        Size    I/O     Description
+-------------------------------------------------------------
+baseport    2       output  base address of sound board
+
+capability  2       output  bitfield of supported features
+
+mustyp      2       output  0=none, 1=OPL2
+
+musnchan    2       output  *1=mono
+
+musnvoice   2       output  *number of melody voices
+
+dignbits    2       output  +8=8 bits
+
+dignchan    2       output  +1=mono
+
+digdma      2       output  +digitized DMA channel
+
+digirq      2       output  +digitized IRQ level
+
+mixtyp      2       output  mixer type (1 software, 2+ H/W)
+
+reserved    44      -na-    undocumented
+
+
+* if (capability & dws_capability_FM)
++ if (capability & dws_capability_DIG)
+
+
+
+The dws_IDEAL struct
+
+
+Name        Size    I/O     Description
+----------------------------------------------------------------
+musictyp    2       input   music type (0 none, 1 FM)
+
+digtyp      2       input   digitzed type (0 none, 8 8-bit dig)
+
+digrate     2       input   sampling rate, in Hz
+
+dignvoices  2       input   number of voices (up to 16)
+
+dignchan    2       input   1=mono
+
+reserved    6       -na-    undocumented
+
+ 
+
+
+The dws_DPLAY struct
+
+Name      Size      I/O       Description
+-----------------------------------------------------------------
+snd       4         input     pointer to buffer with .DWD in it
+
+count     2         input     # times to play (0=infinite loop)
+
+priority  2         input     higher numbers are higher priority
+
+presnd    2         input     soundnum to sequence after
+
+soundnum  2         output    unique ID
+
+reserved  20        -na-      undocumented
+
+ 
+
+
+The dws_MPlay struct
+
+Name      Size      I/O       Description
+----------------------------------------------------------------
+track     4         input     pointer to buffer with .DWM in it
+
+count     2         input     # times to play (0=infinite loop)
+
+reserved  10        -na-      undocumented
+
+ 
+		The Utilities
+
+				PLAYDWM
+
+PLAYDWM is a simple program to play .DWM music files.  Full source is 
+included with the STK.  Usage is:
+
+PLAYDWM songname.dwm
+
+You must type the full filename, including the .DWM.
+
+
+				PLAYDWD
+
+PLAYDWD is a simple program to play .DWD sound effect files.  Full source is 
+included with the STK.  Usage is:
+
+PLAYDWD soundfx.dwd
+
+You must type the full filename, including the .DWD.
+
+
+				FINDSB
+
+FINDSB is provided as both a simple example of how to use the STK, and as a 
+useful program in its own right.  Full source is included with the STK.  It 
+will find and print out the user's sound board settings.  Usage is:
+
+FINDSB
+
+
+				MID2DWM
+
+MID2DWM converts type 1 standard MIDI files from .MID  format to .DWM format.  
+It is strictly a command-line utility.  Usage is:
+
+MID2DWM <<rate>> <<midifile>>[.MID] <<instrfile>>[.IBK] [outfile [.DWM]]
+
+rate is the frequency, at which STK will get its "heartbeat" call during 
+run-time.  In general, the higher the rate, the more natural the music will 
+sound (to a limit).  If your music was performed by a human, there are many 
+nuances of timing which will be lost at lower rates.
+
+Note: if your program is running in a Windows DOS box, 145.6 Hz will not work 
+correctly (Windows will simply refuse to call you that fast, and so the music 
+will play slower than normal).
+
+The STK includes an optional timer module which is capable of four rates: 
+18.2, 36.4, 72.8, and 145.6 Hz.  If you use your own timer code, then tell 
+MID2DWM the rate it runs at; MID2DWM will work at any rate.  If you're using 
+the code supplied in the STK, use one of those four rates only.
+
+midifile is the name of the source file for the music, in MIDI type 1 format.  
+The extension, .MID, is optional.
+
+instrfile is the name of the instrument patch bank file, in .IBK format.  The 
+extension, .IBK, is optional.
+
+outfile is an optional parameter, to specify the name of the output file (if 
+different from the source file).  The extension, .DWM, is optional.
+
+As a simple matter of managing the hundreds of files in your project, if you 
+keep the default file extensions for each type of file, you'll make your life 
+easier.
+
+Examples:
+
+C:\SOURCE\BANE\MUSIC mid2dwm 72.8 death gmptch
+C:\SOURCE\BANE\MUSIC mid2dwm 36.4 death.mid gmptch.ibk dth1.dwm
+
+MID2DWM can convert, and the STK can play, music files larger than 64K.
+
+				VOC2DWD
+
+VOC2DWD converts digitized sound files from .VOC format to .DWD format.  It 
+is strictly a command-line utility.  Usage is:
+
+VOC2DWD <<vocfile>>[.VOC] [outfile [.DWD]]
+
+vocfile is the filename of the input file, which must be in VOC format.  The 
+extension, .VOC, is optional.
+
+outfile is an optional parameter which specifies the name of the output file, 
+if different from the input file.  The .DWD extension is optional.
+
+Examples:
+
+C:\SOURCE\BANE\SFX voc2dwd scream
+C:\SOURCE\BANE\SFX voc2dwd scream.voc sc1.dwd
+
+You can use DOS wildcards to specify vocfile, as in:
+
+C:\SOURCE\BANE\SFX voc2dwd *.voc
+
+VOC2DWD will allow you to convert files greater than 64K; however, this 
+version of the STK will not play them back.  A sequencing mechanism is offered 
+to allow you to play long sounds, but they must be broken up while they're in 
+.VOC format.
+
+Although .VOC files can support all sampling rates via "extended blocks", some 
+.VOC editors only save standard blocks.  These blocks round to the nearest 
+encodable rate, which can be off by up to 1 KHz.  For example, an 11 KHz .VOC 
+file will be saved at 10989 Hz if the sound editor only supports standard 
+blocks.  A difference of 11 Hz is negligible to the human ear, but 1000 Hz 
+(which happens at higher rates) is not.  VOC2DWD supports both kinds of 
+blocks, and reports the true sampling rate during the conversion to help 
+combat this problem.
