@@ -4,8 +4,8 @@
 #include "lib/retro.h"
 #include "lib/retromain.h"
 
-#define TEXTURE_WIDTH 32
-#define TEXTURE_HEIGHT 32
+#define TEXTURE_WIDTH	32
+#define TEXTURE_HEIGHT	32
 
 void ScaleBlit(unsigned char *image, unsigned char *dest, int x0, int y0, int x1, int y1)
 {

@@ -4,16 +4,8 @@
 #include "lib/retro.h"
 #include "lib/retromain.h"
 
-#define RADIX			(32 - kFieldBits)
-
-#define	kFieldBits		9
-#define kFieldSize		(1 << kFieldBits)
-#define kFieldBytes		(kFieldSize * kFieldSize)
-
 #define TEXTURE_WIDTH	256
 #define TEXTURE_HEIGHT	256
-
-#define REND_BITS		8
 
 #define ANGLE_360		4096
 #define ANGLE_180		(ANGLE_360 / 2)
@@ -30,12 +22,12 @@
 #define DEFAULT_PITCH	(RENDER_HEIGHT / 2)
 
 #define SPEED			16
-#define PITCH_SPEED		4
+#define PITCH_SPEED		1
 #define ROLL_SPEED		32
 #define MAX_SPEED		(100 << 8)
 #define MAX_ALTITUDE	1000
 
-#define VERT_SCALE		1536
+#define VERT_SCALE		(1536.0 / 65536)
 #define DEPTH_CLIP		(256 * VERT_SCALE)
 
 #define SKY_HEIGHT		60				// scale sky height
@@ -43,7 +35,7 @@
 #define XCENTER			(RETRO_WIDTH / 2)
 #define YCENTER			(RETRO_HEIGHT / 2)
 
-#define COPY_SCALE		0x0C400   // factor to scale render buffer (256x256) to screen
+#define COPY_SCALE		(50176.0 / 65536)   // factor to scale render buffer (256x256) to screen
 
 #define RENDER_WIDTH	256
 #define RENDER_HEIGHT	256
@@ -54,51 +46,48 @@ unsigned char			*colormap = NULL;
 unsigned char			*cloudmap = NULL;
 unsigned char			*background = NULL;
 
-long 					sinTable[ANGLE_360];
+float 					sinTable[ANGLE_360];
 
-void RipHoriz8(int y, int u0, int v0, int u1, int v1, unsigned char *texture)
+void RipHoriz8(int y, float u0, float v0, float u1, float v1, unsigned char *texture)
 {
-	unsigned char *rendBuffer = renderbuffer + (y << REND_BITS);
+	unsigned char *rendBuffer = renderbuffer + (y * TEXTURE_WIDTH);
 
-	int u = u0 << 16;
-	int v = v0 << 16;
+	float u = u0;
+	float v = v0;
 
 	for (int ebp = 0; ebp < RENDER_WIDTH; ebp++) {
-		*rendBuffer++ = texture[((u >> (32 - 8)) & (TEXTURE_WIDTH - 1)) + ((v >> (32 - 8)) & (TEXTURE_WIDTH - 1)) * TEXTURE_WIDTH];
+		*rendBuffer++ = texture[((int)u & (TEXTURE_WIDTH - 1)) + ((int)v & (TEXTURE_WIDTH - 1)) * TEXTURE_WIDTH];
 
-		u += (u1 - u0) << (16 - REND_BITS);;
-		v += (v1 - v0) << (16 - REND_BITS);;
+		u += (u1 - u0) / TEXTURE_WIDTH;
+		v += (v1 - v0) / TEXTURE_WIDTH;
 	}
 }
 
-void CopyRotate(unsigned char *bitmap, unsigned char *dest, int angle, long scale)
+void CopyRotate(unsigned char *image, unsigned char *dest, int angle, float scale)
 {
 	// calculate deltas
-	long duCol = sinTable[(angle + ANGLE_90) & ANGLE_MASK];
-	long dvCol = sinTable[angle];
-	duCol = (duCol * scale) >> 16;
-	dvCol = (dvCol * scale) >> 16;
+	float duCol = COS(angle) * scale;
+	float dvCol = SIN(angle) * scale;
 
-//	long aspectAdjust = (6 << 16) / 5;
-	long aspectAdjust = 0x13333;      // (1.2 << 16), adjust for mode 13h
-	long duRow = (-dvCol * aspectAdjust) >> 16;
-	long dvRow = (duCol * aspectAdjust) >> 16;
+	float aspectAdjust = 6 / 5;
+	float duRow = -dvCol * aspectAdjust;
+	float dvRow = duCol * aspectAdjust;
 
 	// center of 256x256 bitmap
-	long startingU = 128 << 16;
-	long startingV = 128 << 16;
+	float startingU = 128;
+	float startingV = 128;
 	startingU -= XCENTER * duCol + YCENTER * duRow;
 	startingV -= XCENTER * dvCol + YCENTER * dvRow;
 
-	long rowU = startingU;
-	long rowV = startingV;
+	float rowU = startingU;
+	float rowV = startingV;
 
 	for (int y = 0; y < RETRO_HEIGHT; y++) {
-		long u = rowU;
-		long v = rowV;
+		float u = rowU;
+		float v = rowV;
 
 		for (int x = 0; x < RETRO_WIDTH; x++) {
-			*dest++ = bitmap[((u >> 16) & (TEXTURE_WIDTH - 1)) + ((v >> 16) & (TEXTURE_WIDTH - 1)) * TEXTURE_WIDTH];
+			*dest++ = image[((int)(u) & (TEXTURE_WIDTH - 1)) + ((int)(v) & (TEXTURE_WIDTH - 1)) * TEXTURE_WIDTH];
 			u += duCol;
 			v += dvCol;
 		}
@@ -108,22 +97,22 @@ void CopyRotate(unsigned char *bitmap, unsigned char *dest, int angle, long scal
 	}
 }
 
-void CastRay(int col, int horiz, int altitude, int xorg, int yorg, int dx, int dy)
+void CastRay(int col, int horiz, float altitude, float xorg, float yorg, float dx, float dy)
 {
-	int dz = (horiz - (RENDER_HEIGHT - 1)) * VERT_SCALE;
+	float dz = (horiz - (RENDER_HEIGHT - 1)) * VERT_SCALE;
 
 	// point to bottom of the column
 	int pixel = col + (RENDER_HEIGHT - 1) * RENDER_WIDTH;
 
 	// initial projected pixel height
-	int ph = 0;
+	float ph = 0;
 
 	// initial ray height
-	int z = altitude << 16;
+	float z = altitude;
 
 	// initial coordinates
-	int x = xorg << (16 - kFieldBits);
-	int y = yorg << (16 - kFieldBits);
+	float x = xorg;
+	float y = yorg;
 
 	while (ph < DEPTH_CLIP) {
 		y += dy;
@@ -132,11 +121,11 @@ void CastRay(int col, int horiz, int altitude, int xorg, int yorg, int dx, int d
 		ph += VERT_SCALE;
 
 		// calculate the offset in the height field
-		int ypos = WRAP512((y >> (32 - 9))) << 9;
-		int xpos = WRAP512(x >> (32 - 9));
+		int ypos = WRAP512(y) * 512;
+		int xpos = WRAP512(x);
 		int offset = ypos + xpos;
 
-		int h = heightmap[offset] << 16;
+		float h = heightmap[offset];
 
 		// an intersection occured
 		if (h > z) {
@@ -157,14 +146,14 @@ void CastRay(int col, int horiz, int altitude, int xorg, int yorg, int dx, int d
 
 void DEMO_Render(double deltatime)
 {
-	static int xorg = 128L << 16;
-	static int yorg = 128L << 16;
+	static float xorg = 128;
+	static float yorg = 128;
 	static long altitude = 220;			// arbitrary start height
-	static int yaw = ANGLE_90;
+	static float yaw = ANGLE_90;
 	static int roll = 0;
 	static int pitch = DEFAULT_PITCH;		// horizon line
 	static int skyheight = SKY_HEIGHT;
-	static int speed = SPEED * 20;
+	static int speed = SPEED;
 
 	if (RETRO_KeyState(SDL_SCANCODE_PAGEUP)) {
 		speed += SPEED;
@@ -217,35 +206,35 @@ void DEMO_Render(double deltatime)
 		skyheight--;
 	}
 
-	yaw = (yaw - (SIN(roll) >> 11)) & ANGLE_MASK;
-	altitude += (speed * (pitch - DEFAULT_PITCH)) >> 14;
+	yaw = (int)(yaw - (SIN(roll) * 8)) & ANGLE_MASK;
+	altitude += pitch - DEFAULT_PITCH;
 	altitude = MIN(altitude, MAX_ALTITUDE);
-	xorg += speed * COS(yaw) >> 8;
-	yorg += speed * SIN(yaw) >> 8;
+	xorg += speed / 8 * COS((int)yaw);
+	yorg += speed / 8 * SIN((int)yaw);
 
 	// Draw texture
 	int skyhoriz = pitch + 20;	// overlap clipping of terrain
 
 	// draw the texture mapped sky
-	long lsin = sinTable[(yaw + ANGLE_VIEW) & ANGLE_MASK];
-	long lcos = sinTable[(yaw + ANGLE_VIEW + ANGLE_90) & ANGLE_MASK];
-	long rsin = sinTable[(yaw - ANGLE_VIEW) & ANGLE_MASK];
-	long rcos = sinTable[(yaw - ANGLE_VIEW + ANGLE_90) & ANGLE_MASK];
+	float lsin = sinTable[((int)yaw + ANGLE_VIEW) & ANGLE_MASK];
+	float lcos = sinTable[((int)yaw + ANGLE_VIEW + ANGLE_90) & ANGLE_MASK];
+	float rsin = sinTable[((int)yaw - ANGLE_VIEW) & ANGLE_MASK];
+	float rcos = sinTable[((int)yaw - ANGLE_VIEW + ANGLE_90) & ANGLE_MASK];
 
 	for (int i = 0; i < skyhoriz && i < RENDER_WIDTH; i++) {
-		long dist = (skyheight << 8) / (skyhoriz - i);
-		long u0 = (lcos >> 8) * dist + (xorg >> 10);
-		long v0 = (lsin >> 8) * dist + (yorg >> 10);
-		long u1 = (rcos >> 8) * dist + (xorg >> 10);
-		long v1 = (rsin >> 8) * dist + (yorg >> 10);
+		float dist = (skyheight * 256) / (skyhoriz - i);
+		float u0 = lcos * dist + (xorg * 0.5);
+		float v0 = lsin * dist + (yorg * 0.5);
+		float u1 = rcos * dist + (xorg * 0.5);
+		float v1 = rsin * dist + (yorg * 0.5);
 
 		RipHoriz8(i, u0, v0, u1, v1, cloudmap);
 	}
 
 	for (int col = 0; col < RENDER_WIDTH; col++) {
-		int angle = (ANGLE_VIEW * (RENDER_WIDTH - col * 2)) >> REND_BITS;
-		long dx = COS(yaw + angle) << (RADIX - 16);
-		long dy = SIN(yaw + angle) << (RADIX - 16);
+		int angle = (ANGLE_VIEW * (RENDER_WIDTH - col * 2)) / RENDER_WIDTH;
+		float dx = COS((int)yaw + angle);
+		float dy = SIN((int)yaw + angle);
 
 		// the -40 on the pitch forces the view down to see more of the terrain
 		CastRay(col, pitch - 40, altitude, xorg, yorg, dx, dy);
@@ -264,7 +253,7 @@ void DEMO_Initialize(void)
 	background = RETRO_LoadImage("assets/backgrnd.pcx");
 
 	for (int i = 0; i < ANGLE_180; i++) {
-		sinTable[i] = sin((double)i * M_PI / ANGLE_180) * 65536;
+		sinTable[i] = sin(i * M_PI / ANGLE_180);
 	}
 
 	for (int i = ANGLE_180; i < ANGLE_360; i++) {

@@ -4,12 +4,6 @@
 #include "lib/retro.h"
 #include "lib/retromain.h"
 
-#define RADIX			(32 - kFieldBits)
-
-#define	kFieldBits		9
-#define kFieldSize		(1 << kFieldBits)
-#define kFieldBytes		(kFieldSize * kFieldSize)
-
 #define TEXTURE_WIDTH	256
 #define TEXTURE_HEIGHT	256
 
@@ -30,10 +24,10 @@
 #define SPEED			16
 #define PITCH_SPEED		4
 #define YAW_SPEED		(ANGLE_360 / 256)
-#define MAX_SPEED		(100 << 8)
+#define MAX_SPEED		(100 * 256)
 #define MAX_ALTITUDE	1000
 
-#define VERT_SCALE		1536
+#define VERT_SCALE		(1536.0 / 65536)
 #define DEPTH_CLIP		(256 * VERT_SCALE)
 
 #define RENDER_WIDTH	320
@@ -43,24 +37,24 @@ unsigned char 			renderbuffer[RENDER_WIDTH * RENDER_HEIGHT];
 unsigned char			*heightmap = NULL;
 unsigned char			*colormap = NULL;
 
-long 					sinTable[ANGLE_360];
+float 					sinTable[ANGLE_360];
 
-void CastRay(int col, int horiz, int altitude, int xorg, int yorg, int dx, int dy)
+void CastRay(int col, int horiz, float altitude, float xorg, float yorg, float dx, float dy)
 {
-	int dz = (horiz - (RENDER_HEIGHT - 1)) * VERT_SCALE;
+	float dz = (horiz - (RENDER_HEIGHT - 1)) * VERT_SCALE;
 
 	// point to bottom of the column
 	int pixel = col + (RENDER_HEIGHT - 1) * RENDER_WIDTH;
 
 	// initial projected pixel height
-	int ph = 0;
+	float ph = 0;
 
 	// initial ray height
-	int z = altitude << 16;
+	float z = altitude;
 
 	// initial coordinates
-	int x = xorg << (16 - kFieldBits);
-	int y = yorg << (16 - kFieldBits);
+	float x = xorg;
+	float y = yorg;
 
 	while (ph < DEPTH_CLIP) {
 		y += dy;
@@ -69,11 +63,11 @@ void CastRay(int col, int horiz, int altitude, int xorg, int yorg, int dx, int d
 		ph += VERT_SCALE;
 
 		// calculate the offset in the height field
-		int ypos = WRAP512((y >> (32 - 9))) << 9;
-		int xpos = WRAP512(x >> (32 - 9));
+		int ypos = WRAP512(y) * 512;
+		int xpos = WRAP512(x);
 		int offset = ypos + xpos;
 
-		int h = heightmap[offset] << 16;
+		float h = heightmap[offset];
 
 		// an intersection occured
 		if (h > z) {
@@ -94,12 +88,12 @@ void CastRay(int col, int horiz, int altitude, int xorg, int yorg, int dx, int d
 
 void DEMO_Render(double deltatime)
 {
-	static int xorg = 128L << 16;
-	static int yorg = 128L << 16;
+	static float xorg = 128;
+	static float yorg = 128;
 	static long altitude = 220;			// arbitrary start height
 	static int yaw = ANGLE_90;
 	static int pitch = DEFAULT_PITCH;		// horizon line
-	static int speed = SPEED * 20;
+	static int speed = SPEED;
 
 	if (RETRO_KeyState(SDL_SCANCODE_UP) || RETRO_KeyState(SDL_SCANCODE_DOWN)) {
 		if (RETRO_KeyState(SDL_SCANCODE_UP)) {
@@ -136,10 +130,10 @@ void DEMO_Render(double deltatime)
 		speed = MAX_SPEED;
 	}
 
-	altitude += (speed * (pitch - DEFAULT_PITCH)) >> 14;
+	altitude += pitch - DEFAULT_PITCH;
 	altitude = MIN(altitude, MAX_ALTITUDE);
-	xorg += speed * COS(yaw) >> 8;
-	yorg += speed * SIN(yaw) >> 8;
+	xorg += speed / 8 * COS(yaw);
+	yorg += speed / 8 * SIN(yaw);
 
 	int skyhoriz = pitch + 100;	// overlap clipping of terrain
 
@@ -153,8 +147,8 @@ void DEMO_Render(double deltatime)
 
 	for (int col = 0; col < RENDER_WIDTH; col++) {
 		int angle = (ANGLE_VIEW * (RENDER_WIDTH - col * 2)) / RENDER_WIDTH;
-		long dx = COS(yaw + angle) << (RADIX - 16);
-		long dy = SIN(yaw + angle) << (RADIX - 16);
+		float dx = COS(yaw + angle);
+		float dy = SIN(yaw + angle);
 
 		// the -40 forces the view down to see more of the terrain
 		CastRay(col, pitch - 40, altitude, xorg, yorg, dx, dy);
@@ -170,7 +164,7 @@ void DEMO_Initialize(void)
 	heightmap = RETRO_LoadImage("assets/demoh.pcx");
 
 	for (int i = 0; i < ANGLE_180; i++) {
-		sinTable[i] = sin((double)i * M_PI / ANGLE_180) * 65536;
+		sinTable[i] = sin(i * M_PI / ANGLE_180);
 	}
 
 	for (int i = ANGLE_180; i < ANGLE_360; i++) {
